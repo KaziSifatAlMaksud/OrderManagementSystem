@@ -1,0 +1,6 @@
+PORT = 8000
+
+host=sql6.freesqldatabase.com
+User= sql6703921
+password=lzPih8SQxY
+database=sql6703921

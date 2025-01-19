@@ -1,0 +1,100 @@
+const { connection } = require("../utils/dbConnect");
+
+// GET
+async function getProducts() {
+  return new Promise((resolve, reject) => {
+    connection.query("SELECT * FROM product", (error, results) => {
+      if (error) {
+        return reject({ message: "Error getting products:", error: error });
+      }
+      return resolve({ status: "OK", data: results });
+    });
+  });
+}
+
+// GET Product by id
+async function getProductById(productId) {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT * FROM product WHERE id = ${productId}`,
+      (error, results) => {
+        if (error) {
+          return reject({ message: "Error getting products:", error: error });
+        }
+        if (results.length === 0) {
+          return resolve({ message: `Product id ${productId} not found` });
+        }
+        return resolve({ status: "OK", results });
+      }
+    );
+  });
+}
+
+// POST
+async function postProduct(product) {
+  return new Promise((resolve, reject) => {
+    const query =
+      "INSERT INTO product (name, description, price, weight, qty, status) VALUES (?, ?, ?, ?, ?, ?)";
+    connection.query(
+      query,
+      [product.name, product.description, product.price, product.weight, product.qty, 1],
+      (error, results) => {
+        if (error) {
+          return reject({ message: "Error creating product:", error: error });
+        }
+        return resolve({ status: "created", result: product });
+      }
+    );
+  });
+}
+
+
+
+// Delete Product by id
+async function deleteProduct(productId) {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `DELETE FROM product WHERE id = ${productId}`,
+      (error, results) => {
+        if (error) {
+          return reject({ message: "Error getting products:", error: error });
+        }
+        if (results.affectedRows === 0) {
+          return resolve({ message: `Product id ${productId} not found` });
+        }
+        return resolve({ status: "Product deleted successfully" });
+      }
+    );
+  });
+}
+
+// Update Product by id
+async function updateProduct(productId, product) {
+  const { name, description, weight, price, qty, status } = product;
+
+  return new Promise((resolve, reject) => {
+    const query =
+      "UPDATE product SET name=?, description=?, weight=?,status=?, price=?, qty=? WHERE id=?";
+    connection.query(
+      query,
+      [name, description, weight, price, qty, status, productId],
+      (error, results) => {
+        if (error) {
+          return reject({ message: "Error updating product:", error: error });
+        }
+        if (results.affectedRows === 0) {
+          return resolve({ message: `Product with ID ${productId} not found` });
+        }
+        return resolve({ status: "Product updated successfully", results });
+      }
+    );
+  });
+}
+
+module.exports = {
+  postProduct,
+  getProducts,
+  getProductById,
+  deleteProduct,
+  updateProduct,
+};
