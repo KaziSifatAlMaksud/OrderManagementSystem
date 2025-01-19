@@ -5,7 +5,7 @@ const cors = require('cors');
 const productsRouter = require("./routes/products/products.routers");
 const promotionsRouter = require("./routes/promotion/promotion.routers");
 const ordersRouter = require('./routes/order/orders.routers');
-// const userRouter = require("./routes/user/user.routers");
+//const authRouter = require("./routes/auth/auth.routers");
 const morgan = require('morgan');
 
 
@@ -17,12 +17,10 @@ app.use(express.json());
 app.use(morgan('combined'));
 app.use('/products', productsRouter);
 app.use('/promotions', promotionsRouter);
-
 app.use('/orders', ordersRouter);
 
+//app.use("/auth", authRouter);
 //app.use('/sales', salesRouter);
-// app.use('/users', userRouter);
-
 
 
 // root route
