@@ -25,4 +25,3 @@ promotionsRouter.put('/:id', httpUpdatePromotion);
 promotionsRouter.delete('/:id', httpDeletePromotion);
 
 module.exports = promotionsRouter;
-// Compare this snippet from src/routes/promotion/promotion.routers.js:
