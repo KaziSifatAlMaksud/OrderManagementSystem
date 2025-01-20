@@ -3,19 +3,25 @@ const bcrypt = require("bcryptjs");
 
 // Create a new user
 async function createUser(user) {
-    const { name, email, password } = user;
-
-    const hashedPassword = await bcrypt.hash(password, 10); // Hash password before saving
-    return new Promise((resolve, reject) => {
-        const query =
-            "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-        connection.query(query, [name, email, hashedPassword], (error, results) => {
-            if (error) {
-                return reject({ message: "Error creating user:", error });
-            }
-            return resolve({ status: "created", result: user });
+    const { name, email, password, type } = user;
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const query = `
+            INSERT INTO users (name, email, password, type)
+            VALUES (?, ?, ?, ?)
+        `;
+        return new Promise((resolve, reject) => {
+            connection.query(query, [name, email, hashedPassword, type], (error, results) => {
+                if (error) {
+                    return reject({ message: 'Error creating user', error });
+                }
+                const createdUser = { ...user, password: undefined };
+                return resolve({ status: 'created', result: createdUser });
+            });
         });
-    });
+    } catch (error) {
+        return Promise.reject({ message: 'Error hashing password', error });
+    }
 }
 
 // Get user by email

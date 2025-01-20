@@ -5,8 +5,9 @@ const cors = require('cors');
 const productsRouter = require("./routes/products/products.routers");
 const promotionsRouter = require("./routes/promotion/promotion.routers");
 const ordersRouter = require('./routes/order/orders.routers');
-//const authRouter = require("./routes/auth/auth.routers");
+cogit nst authRouter = require("./routes/auth/auth.routers");
 const morgan = require('morgan');
+
 
 
 //const salesRouter = require("./routes/sales/sales.routers");
@@ -17,16 +18,16 @@ app.use(express.json());
 app.use(morgan('combined'));
 app.use('/products', productsRouter);
 app.use('/promotions', promotionsRouter);
-app.use('/orders', ordersRouter);
+// app.use('/orders', ordersRouter);
 
-//app.use("/auth", authRouter);
-//app.use('/sales', salesRouter);
+app.use("/", authRouter);
+
 
 
 // root route
-app.get('/', (req, res) => {
-    res.send(" Test");
-})
+// app.get('/', (req, res) => {
+//     res.send(" Test");
+// })
 
 
 module.exports = app;

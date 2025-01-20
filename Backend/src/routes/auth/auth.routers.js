@@ -9,7 +9,11 @@ const authRouter = express.Router();
 // Register route
 authRouter.post("/register", httpRegisterUser);
 
-// Login route
+
 authRouter.post("/login", httpLoginUser);
+
+authRouter.get("/", (req, res) => {
+    res.send("Welcome Admin api");
+});
 
 module.exports = authRouter;
