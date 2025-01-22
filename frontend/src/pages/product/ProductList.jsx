@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import config from "../../config/config";
 import ProductModal from "../../components/ProductModel"; 
 
@@ -8,9 +8,18 @@ const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [productToEdit, setProductToEdit] = useState(null);
+  const navigate = useNavigate();
 
   // Fetch products on component load
   useEffect(() => {
+    // Check if user session exists
+    const userSession = sessionStorage.getItem("Sifat"); // Replace with your session key
+    if (!userSession) {
+      navigate("/signin"); // Redirect to login if no session
+      return;
+    }
+
+    // Fetch products
     const fetchProducts = async () => {
       try {
         const response = await fetch(`${config.apiUrl}/products/`);
@@ -27,7 +36,7 @@ const ProductList = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [navigate]);
 
   // Handle edit button
   const handleEdit = (product) => {
@@ -190,7 +199,7 @@ const ProductList = () => {
           </tbody>
         </table>
 
-        {/* Modal trigger to show the blur effect */}
+        {/* Modal trigger with black background */}
         {showEditModal && (
           <div
             className="modal fade show"
@@ -199,7 +208,7 @@ const ProductList = () => {
             role="dialog"
             aria-labelledby="editModalLabel"
             aria-hidden="true"
-            style={{ display: "block", backdropFilter: "blur(5px)" }} // Apply the blur effect
+            style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.85)" }}
           >
             <div className="modal-dialog" role="document">
               <div className="modal-content">

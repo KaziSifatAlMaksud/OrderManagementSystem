@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import { Link } from 'react-router-dom';
 
 const PromotionCreate = () => {
+  const navigate = useNavigate();
+
+  // Session validation
+  useEffect(() => {
+    const userSession = sessionStorage.getItem("Sifat"); 
+     const sessionData = userSession ? JSON.parse(userSession) : null;
+    if (!sessionData || sessionData.type !== "admin") {
+      navigate("/signin"); 
+    }
+  }, [navigate]);
+
   const [promotion, setPromotion] = useState({
     title: '',
     start_date: '',

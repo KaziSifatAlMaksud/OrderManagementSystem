@@ -17,4 +17,4 @@ promotionsRouter.put('/:id', httpUpdatePromotion);
 promotionsRouter.delete('/:id', httpDeletePromotion);
 promotionsRouter.put('/action/:id', httpUpdatePromotionStatus);
 
-module.exports = promotionsRouter;
+module.exports = promotionsRouter; 

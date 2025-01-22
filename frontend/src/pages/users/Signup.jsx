@@ -136,7 +136,7 @@ const Signup = () => {
                 Sign Up
               </Button>
             </Form>
-            <p className="pt-3">Already have an account? <a href="/login">Login</a></p>
+            <p className="pt-3">Already have an account? <a href="/signin">Login</a></p>
 
                      
           </Card.Body>

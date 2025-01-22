@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import EditPromotionModal from "../../components/EditPromotionModal"; // Import your EditPromotionModal component
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal"; // Import Delete Confirmation Modal
 import config from "../../config/config";
@@ -10,18 +10,26 @@ const PromotionTable = () => {
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const userSession = sessionStorage.getItem("Sifat"); // Replace "Sifat" with your session key
+   
+    const sessionData = userSession ? JSON.parse(userSession) : null;
+    if (!sessionData || sessionData.type !== "admin") {
+      navigate("/signin"); // Redirect to sign-in page if session is missing
+      return;
+    }
+
     const fetchPromotions = async () => {
       try {
         const response = await fetch("http://localhost:5000/promotions/");
         const data = await response.json();
 
-        if (data.status == "OK" && Array.isArray(data.data)) {
-          // Directly using promotion.status (0 or 1)
+        if (data.status === "OK" && Array.isArray(data.data)) {
           const mappedPromotions = data.data.map((promotion) => ({
             ...promotion,
-            isActive: promotion.status == 1, // Convert status to boolean (1 = Active, 0 = Inactive)
+            isActive: promotion.status === 1, // Convert status to boolean (1 = Active, 0 = Inactive)
           }));
           setPromotions(mappedPromotions);
         } else {
@@ -33,7 +41,7 @@ const PromotionTable = () => {
     };
 
     fetchPromotions();
-  }, []);
+  }, [navigate]);
 
   const handleEdit = (promotion) => {
     setSelectedPromotion(promotion);
@@ -62,9 +70,9 @@ const PromotionTable = () => {
   };
 
   const handleStatusChange = async (id) => {
-    const promotion = promotions.find((promotion) => promotion.id == id);
+    const promotion = promotions.find((promotion) => promotion.id === id);
     if (!promotion) return;
-    const newStatus = promotion.status == 1 ? 0 : 1; // Inactive if 1, Active if 0
+    const newStatus = promotion.status === 1 ? 0 : 1; // Inactive if 1, Active if 0
 
     try {
       const response = await fetch(`${config.apiUrl}/promotions/action/${id}`, {
@@ -77,14 +85,10 @@ const PromotionTable = () => {
 
       const data = await response.json();
 
-      // Check if the response is successful
-      if (response.ok && data.message == "Promotion status updated successfully") {
-        console.log("Promotion status updated:", data);
-
-        // Update the status of the promotion in the state
+      if (response.ok && data.message === "Promotion status updated successfully") {
         setPromotions((prevPromotions) =>
           prevPromotions.map((p) =>
-            p.id == id ? { ...p, status: newStatus } : p
+            p.id === id ? { ...p, status: newStatus } : p
           )
         );
       } else {
@@ -134,14 +138,14 @@ const PromotionTable = () => {
                       type="checkbox"
                       role="switch"
                       id={`statusSwitch-${promotion.id}`}
-                      checked={promotion.status == 1} // Checked if the status is 1 (Active)
+                      checked={promotion.status === 1}
                       onChange={() => handleStatusChange(promotion.id)}
                     />
                     <label
                       className="form-check-label"
                       htmlFor={`statusSwitch-${promotion.id}`}
                     >
-                      {promotion.status == 1 ? "Active" : "Inactive"} {/* Display based on status */}
+                      {promotion.status === 1 ? "Active" : "Inactive"}
                     </label>
                   </div>
                 </td>
@@ -173,7 +177,7 @@ const PromotionTable = () => {
         onSave={(updatedPromotion) => {
           setPromotions((prev) =>
             prev.map((promo) =>
-              promo.id == updatedPromotion.id ? updatedPromotion : promo
+              promo.id === updatedPromotion.id ? updatedPromotion : promo
             )
           );
           setShowEditModal(false);

@@ -1,7 +1,7 @@
 import React from "react";
-import { Route, Routes, BrowserRouter } from 'react-router-dom'
+import { Route, Routes, BrowserRouter } from "react-router-dom";
 import Header from "./components/Header";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Products from "./pages/product/ProductList";
@@ -14,6 +14,7 @@ import ViewProduct from "./pages/viewProduct/ProductView";
 import PlaceOrderPage from "./pages/viewProduct/PlaceOrder";
 import Signup from "./pages/users/Signup";
 import Signin from "./pages/users/Signin";
+import Dashboard from "./pages/Dashboard";
 // import Register from "./pages/users/Register";
 
 const App = () => {
@@ -21,16 +22,16 @@ const App = () => {
     <div>
       <Routes>
         <Route path="/" element={<Home />} />
+         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/about" element={<About />} />
-         <Route path="/signup" element={<Signup />} />
-         <Route Path="/signin" element={<Signin />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/signin" element={<Signin />} />
         <Route path="/products" element={<Products />} />
         <Route path="/add-product" element={<AddProduct />} />
         <Route path="/Promotions" element={<Promotions />} />
         <Route path="/add-Promotion" element={<AddPromotion />} />
         <Route path="/viewproduct" element={<ViewProduct />} />
         <Route path="/placeorder" element={<PlaceOrderPage />} />
-        
       </Routes>
     </div>
   );

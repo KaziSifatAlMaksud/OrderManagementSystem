@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import { Link } from 'react-router-dom';
 
 const ProductCreate = () => {
+  const navigate = useNavigate();
+
+  // Validate session on component mount
+  useEffect(() => {
+    const userSession = sessionStorage.getItem("Sifat"); // Replace "Sifat" with your session key
+    if (!userSession) {
+      navigate("/signin"); // Redirect to sign-in page if no session exists
+    }
+  }, [navigate]);
+
   const [product, setProduct] = useState({
     name: '',
     description: '',
@@ -65,7 +76,7 @@ const ProductCreate = () => {
         <Link to="/products" className="btn btn-secondary mb-3">
           Back to Product List
         </Link>
-        <h2 className='display-6 text-center'>Add New Product</h2>
+        <h2 className="display-6 text-center">Add New Product</h2>
         {error && <div className="alert alert-danger">{error}</div>}
         {successMessage && <div className="alert alert-success">{successMessage}</div>}
         <form onSubmit={handleSubmit}>
