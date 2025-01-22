@@ -107,11 +107,11 @@ const PromotionCreate = () => {
   return (
     <>
       <Header />
-      <div className="container mt-5">
+      <div className="container my-5 pb-5">
         <Link to="/promotions" className="btn btn-secondary mb-3">
           Back to Promotion List
         </Link>
-        <h2>Create New Promotion</h2>
+        <h2 className="display-6">Create New Promotion</h2>
         {error && <div className="alert alert-danger">{error}</div>}
         {successMessage && <div className="alert alert-success">{successMessage}</div>}
         <form onSubmit={handleSubmit}>

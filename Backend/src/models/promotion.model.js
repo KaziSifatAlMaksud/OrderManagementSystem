@@ -30,6 +30,25 @@ async function getPromotionById(promotionId) {
     });
 }
 
+async function updatePromotionStatus(promotionId, action) {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'UPDATE promotions SET status = ? WHERE id = ?',
+            [action, promotionId],
+            (err, results) => {
+                if (err) {
+                    return reject({ message: "Error updating promotion status:", error: err });
+                }
+                if (results.affectedRows === 0) {
+                    return resolve({ message: `Promotion id ${promotionId} not found` });
+                }
+                return resolve({ status: "Promotion status updated successfully" });
+            }
+        );
+    });
+}
+
+
 
 // POST a new promotion
 
@@ -140,4 +159,5 @@ module.exports = {
     getPromotionById,
     deletePromotion,
     updatePromotion,
+    updatePromotionStatus,
 };

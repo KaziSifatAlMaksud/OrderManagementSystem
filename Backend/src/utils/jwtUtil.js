@@ -7,7 +7,7 @@ function generateToken(user) {
         name: user.name,
         email: user.email,
     };
-    const secret = "your-secret-key"; // You should store this securely (e.g., in .env)
+    const secret = "abc"; // You should store this securely (e.g., in .env)
     const options = { expiresIn: "1h" }; // Token expiration
 
     return jwt.sign(payload, secret, options);
@@ -15,7 +15,7 @@ function generateToken(user) {
 
 // Function to verify a JWT token
 function verifyToken(token) {
-    const secret = "your-secret-key"; // Use the same secret key as in the generateToken function
+    const secret = "abc"; // Use the same secret key as in the generateToken function
     return jwt.verify(token, secret);
 }
 

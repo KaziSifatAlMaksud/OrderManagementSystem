@@ -12,6 +12,29 @@ async function getProducts() {
   });
 }
 
+// GET
+async function getActiveProducts() {
+  return new Promise((resolve, reject) => {
+    connection.query("SELECT * FROM product", (error, results) => {
+      if (error) {
+        return reject({ message: "Error getting products:", error: error });
+      }
+      return resolve({ status: "OK", data: results });
+    });
+  });
+}
+
+// async function getactiveProducts() {
+//   return new Promise((resolve, reject) => {
+//     connection.query("SELECT * FROM product", (error, results) => {
+//       if (error) {
+//         return reject({ message: "Error getting products:", error: error });
+//       }
+//       return resolve({ status: "OK", data: results });
+//     });
+//   });
+// }
+
 // GET Product by id
 async function getProductById(productId) {
   return new Promise((resolve, reject) => {
@@ -139,4 +162,5 @@ module.exports = {
   updateProduct,
   updateProductStatus,
   autocompleteProducts,
+  getActiveProducts,
 };

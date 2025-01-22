@@ -7,6 +7,7 @@ const {
     httpUpdateProduct,
     httpUpdateProductStatus,
     httpGetAutocompleteProducts,
+    httpGetActiveProducts,
 
 } = require('./products.controller');
 
@@ -18,5 +19,6 @@ productsRouter.delete('/:id', httpDeleteProduct);
 productsRouter.put('/:id', httpUpdateProduct);
 productsRouter.put('/action/:id', httpUpdateProductStatus);
 productsRouter.get('/', httpGetAutocompleteProducts);
+productsRouter.get('/onactive', httpGetActiveProducts);
 
 module.exports = productsRouter;

@@ -44,13 +44,9 @@ const httpLoginUser = async (req, res) => {
     try {
         // Fetch the user by email
         const user = await getUserByEmail(email);
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid email or password' });
+        if (!user || !user.data || !user.data.password) {
+            return res.status(400).json({ message: "Invalid email or password" });
         }
-        console.log("User:", user);
-        console.log("User password", user.data.password);
-        console.log("Userasdfasdf password", password);
-
         // Check if the password matches
         const isMatch = await bcrypt.compare(password, user.data.password);
         console.log("User isMatch:", isMatch);

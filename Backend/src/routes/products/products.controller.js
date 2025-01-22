@@ -6,12 +6,20 @@ const {
   updateProduct,
   autocompleteProducts,
   updateProductStatus,
+  getactiveProducts,
 } = require("../../models/products.model");
 
 // GET
 async function httpGetAllProducts(req, res) {
-  return res.status(200).json(await getProducts());
+  try {
+    const products = await getProducts();
+    return res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching all products:", error);
+    return res.status(500).json({ error: "Failed to fetch products" });
+  }
 }
+
 
 
 // GET Product by id
@@ -103,6 +111,16 @@ async function httpUpdateProduct(req, res) {
   }
 }
 
+async function httpGetActiveProducts(req, res) {
+  try {
+    const activeProducts = await getactiveProducts();
+    return res.status(200).json(activeProducts);
+  } catch (error) {
+    console.error("Error fetching active products:", error);
+    return res.status(500).json({ error: "Failed to fetch active products" });
+  }
+}
+
 module.exports = {
   httpGetAllProducts,
   httpAddNewProduct,
@@ -111,4 +129,5 @@ module.exports = {
   httpUpdateProduct,
   httpGetAutocompleteProducts,
   httpUpdateProductStatus,
+  httpGetActiveProducts,
 };

@@ -3,6 +3,7 @@ import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 import EditPromotionModal from "../../components/EditPromotionModal"; // Import your EditPromotionModal component
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal"; // Import Delete Confirmation Modal
+import config from "../../config/config";
 
 const PromotionTable = () => {
   const [promotions, setPromotions] = useState([]);
@@ -16,10 +17,11 @@ const PromotionTable = () => {
         const response = await fetch("http://localhost:5000/promotions/");
         const data = await response.json();
 
-        if (data.status === "OK" && Array.isArray(data.data)) {
+        if (data.status == "OK" && Array.isArray(data.data)) {
+          // Directly using promotion.status (0 or 1)
           const mappedPromotions = data.data.map((promotion) => ({
             ...promotion,
-            isActive: promotion.status === 1,
+            isActive: promotion.status == 1, // Convert status to boolean (1 = Active, 0 = Inactive)
           }));
           setPromotions(mappedPromotions);
         } else {
@@ -59,21 +61,45 @@ const PromotionTable = () => {
     }
   };
 
-  const handleStatusChange = (id) => {
-    setPromotions((prevPromotions) =>
-      prevPromotions.map((promotion) =>
-        promotion.id === id
-          ? { ...promotion, isActive: !promotion.isActive }
-          : promotion
-      )
-    );
+  const handleStatusChange = async (id) => {
+    const promotion = promotions.find((promotion) => promotion.id == id);
+    if (!promotion) return;
+    const newStatus = promotion.status == 1 ? 0 : 1; // Inactive if 1, Active if 0
+
+    try {
+      const response = await fetch(`${config.apiUrl}/promotions/action/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const data = await response.json();
+
+      // Check if the response is successful
+      if (response.ok && data.message == "Promotion status updated successfully") {
+        console.log("Promotion status updated:", data);
+
+        // Update the status of the promotion in the state
+        setPromotions((prevPromotions) =>
+          prevPromotions.map((p) =>
+            p.id == id ? { ...p, status: newStatus } : p
+          )
+        );
+      } else {
+        console.error("Failed to update promotion status:", data);
+      }
+    } catch (error) {
+      console.error("Error updating promotion status:", error);
+    }
   };
 
   return (
     <>
       <Header />
       <div className="container mt-5 content-background">
-        <h1 className="mb-4">Promotion List</h1>
+        <h1 className="mb-4 display-6">Promotion List</h1>
 
         <Link to="/add-promotion">
           <button className="btn btn-primary mb-3">Add Promotion +</button>
@@ -108,14 +134,14 @@ const PromotionTable = () => {
                       type="checkbox"
                       role="switch"
                       id={`statusSwitch-${promotion.id}`}
-                      checked={promotion.isActive}
+                      checked={promotion.status == 1} // Checked if the status is 1 (Active)
                       onChange={() => handleStatusChange(promotion.id)}
                     />
                     <label
                       className="form-check-label"
                       htmlFor={`statusSwitch-${promotion.id}`}
                     >
-                      {promotion.isActive ? "Active" : "Inactive"}
+                      {promotion.status == 1 ? "Active" : "Inactive"} {/* Display based on status */}
                     </label>
                   </div>
                 </td>
@@ -147,7 +173,7 @@ const PromotionTable = () => {
         onSave={(updatedPromotion) => {
           setPromotions((prev) =>
             prev.map((promo) =>
-              promo.id === updatedPromotion.id ? updatedPromotion : promo
+              promo.id == updatedPromotion.id ? updatedPromotion : promo
             )
           );
           setShowEditModal(false);
