@@ -1,37 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { Link } from "react-router-dom";
-import PromotionModal from "../../components/EditPromotionModal"; 
+import config from "../../config/config";
 
-const PromotionList = () => {
-  const promotions = [
-    { id: 1, title: "Summer Sales", start_date: "2021-06-01", end_date: "2021-06-30", promotion_type: "Flat Discount", discount: "10%", product_id: 1, isActive: true },
-    { id: 2, title: "New Year Offer", start_date: "2022-01-01", end_date: "2022-01-15", promotion_type: "Buy One Get One", discount: null, product_id: 2, isActive: true },
-    { id: 3, title: "Festive Season Deal", start_date: "2022-12-01", end_date: "2022-12-31", promotion_type: "Flat Discount", discount: "20%", product_id: 3, isActive: true },
-    { id: 4, title: "Black Friday Special", start_date: "2022-11-25", end_date: "2022-11-25", promotion_type: "Flash Sale", discount: "50%", product_id: 4, isActive: false },
-    { id: 5, title: "Clearance Sale", start_date: "2023-03-01", end_date: "2023-03-10", promotion_type: "Flat Discount", discount: "30%", product_id: 1, isActive: true }
-  ];
+const PromotionTable = () => {
+  const [promotions, setPromotions] = useState([]);
 
-  const [showModal, setShowModal] = useState(false);
-  const [selectedPromotion, setSelectedPromotion] = useState(null);
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        const response = await fetch(`${config}/promotions/`);
+        const data = await response.json();
+
+        if (data.status === "OK" && Array.isArray(data.data)) {
+          // Map API data to include an isActive field for handling status
+          const mappedPromotions = data.data.map((promotion) => ({
+            ...promotion,
+            isActive: promotion.status === 1, // Convert status to boolean
+          }));
+          setPromotions(mappedPromotions);
+        } else {
+          console.error("Unexpected API response:", data);
+        }
+      } catch (error) {
+        console.error("Error fetching promotions:", error);
+      }
+    };
+
+    fetchPromotions();
+  }, []);
 
   const handleEdit = (id) => {
-    const promotion = promotions.find((promotion) => promotion.id === id);
-    setSelectedPromotion(promotion);
-    setShowModal(true); 
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false); 
-    setSelectedPromotion(null); 
+    console.log("Edit promotion with id:", id);
+    // Implement edit functionality (you can navigate to the edit page or open a modal)
   };
 
   const handleDelete = (id) => {
-    console.log("Delete product with id:", id);
+    console.log("Delete promotion with id:", id);
+    // Implement delete functionality (e.g., API call to delete promotion)
   };
 
   const handleStatusChange = (id) => {
-    console.log("Change status of promotion with id:", id);
+    setPromotions((prevPromotions) =>
+      prevPromotions.map((promotion) =>
+        promotion.id === id
+          ? { ...promotion, isActive: !promotion.isActive }
+          : promotion
+      )
+    );
   };
 
   return (
@@ -40,10 +56,8 @@ const PromotionList = () => {
       <div className="container mt-5">
         <h1 className="mb-4">Promotion List</h1>
 
-        <Link to="/add-product">
-          <button className="btn btn-primary mb-3">
-            Add Promotion +
-          </button>
+        <Link to="/add-promotion">
+          <button className="btn btn-primary mb-3">Add Promotion +</button>
         </Link>
 
         <table className="table table-striped table-bordered table-hover">
@@ -55,7 +69,6 @@ const PromotionList = () => {
               <th>End Date</th>
               <th>Promotion Type</th>
               <th>Discount</th>
-              <th>Product</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
@@ -68,8 +81,7 @@ const PromotionList = () => {
                 <td>{promotion.start_date}</td>
                 <td>{promotion.end_date}</td>
                 <td>{promotion.promotion_type}</td>
-                <td>{promotion.discount}</td>
-                <td>{promotion.product_id}</td>
+                <td>{promotion.discount || "N/A"}</td>
                 <td>
                   <div className="form-check form-switch">
                     <input
@@ -80,8 +92,11 @@ const PromotionList = () => {
                       checked={promotion.isActive}
                       onChange={() => handleStatusChange(promotion.id)}
                     />
-                    <label className="form-check-label" htmlFor={`statusSwitch-${promotion.id}`}>
-                      {promotion.isActive ? "true" : "false"}
+                    <label
+                      className="form-check-label"
+                      htmlFor={`statusSwitch-${promotion.id}`}
+                    >
+                      {promotion.isActive ? "Active" : "Inactive"}
                     </label>
                   </div>
                 </td>
@@ -104,18 +119,8 @@ const PromotionList = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Render the modal */}
-      {selectedPromotion && (
-        <PromotionModal
-          showModal={showModal}
-          onClose={handleCloseModal}
-          promotionId={selectedPromotion.id}
-          promotion={selectedPromotion}
-        />
-      )}
     </>
   );
 };
 
-export default PromotionList;
+export default PromotionTable;

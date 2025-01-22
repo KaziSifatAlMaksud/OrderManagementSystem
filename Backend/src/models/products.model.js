@@ -30,6 +30,24 @@ async function getProductById(productId) {
   });
 }
 
+// Autocomplete products by name or id
+async function autocompleteProducts(query) {
+  return new Promise((resolve, reject) => {
+    const searchQuery = `%${query}%`;
+    const sql =
+      "SELECT id, name FROM product WHERE name LIKE ? OR id LIKE ? LIMIT 10";
+    connection.query(sql, [searchQuery, searchQuery], (error, results) => {
+      if (error) {
+        return reject({ message: "Error fetching products for autocomplete:", error: error });
+      }
+
+      return resolve({ status: "OK", products: results });
+    });
+  });
+}
+
+
+
 // POST
 async function postProduct(product) {
   return new Promise((resolve, reject) => {
@@ -43,6 +61,26 @@ async function postProduct(product) {
           return reject({ message: "Error creating product:", error: error });
         }
         return resolve({ status: "created", result: product });
+      }
+    );
+  });
+}
+
+// Update Product status by id
+// Update Product Status by ID
+async function updateProductStatus(productId, action) {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      'UPDATE product SET status = ? WHERE id = ?',
+      [action, productId],
+      (err, results) => {
+        if (err) {
+          return reject({ message: "Error updating product status:", error: err });
+        }
+        if (results.affectedRows === 0) {
+          return resolve({ message: `Product id ${productId} not found` });
+        }
+        return resolve({ status: "Product status updated successfully" });
       }
     );
   });
@@ -72,6 +110,8 @@ async function deleteProduct(productId) {
 async function updateProduct(productId, product) {
   const { name, description, weight, price, qty, status } = product;
 
+  console.log("Updating product:", product);
+  console.log("Product ID:", productId);
   return new Promise((resolve, reject) => {
     const query =
       "UPDATE product SET name=?, description=?, weight=?,status=?, price=?, qty=? WHERE id=?";
@@ -82,7 +122,7 @@ async function updateProduct(productId, product) {
         if (error) {
           return reject({ message: "Error updating product:", error: error });
         }
-        if (results.affectedRows === 0) {
+        if (results.affectedRows == 0) {
           return resolve({ message: `Product with ID ${productId} not found` });
         }
         return resolve({ status: "Product updated successfully", results });
@@ -97,4 +137,6 @@ module.exports = {
   getProductById,
   deleteProduct,
   updateProduct,
+  updateProductStatus,
+  autocompleteProducts,
 };

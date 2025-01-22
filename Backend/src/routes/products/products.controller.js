@@ -4,6 +4,8 @@ const {
   getProductById,
   deleteProduct,
   updateProduct,
+  autocompleteProducts,
+  updateProductStatus,
 } = require("../../models/products.model");
 
 // GET
@@ -16,6 +18,43 @@ async function httpGetAllProducts(req, res) {
 async function httpGetProductById(req, res) {
   const productId = req.params.id;
   return res.status(200).json(await getProductById(productId));
+}
+
+const httpGetAutocompleteProducts = async (req, res) => {
+  const { q } = req.query;
+  if (!q) {
+    return res.status(400).json({ message: 'Query parameter "q" is required.' });
+  }
+
+  try {
+    const result = await autocompleteProducts(q);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+async function httpUpdateProductStatus(req, res) {
+  const productId = req.params.id; // Correctly extract product ID from route parameters
+  const { status } = req.body;
+
+  if (status === undefined) {
+    return res.status(400).json({ error: "Missing required field: status" });
+  }
+
+  try {
+    const updatedProduct = await updateProductStatus(productId, status);
+    console.log("Updated product:", updatedProduct);
+    if (updatedProduct) {
+      return res.status(200).json({ message: "Product status updated successfully" });
+    } else {
+      // If no rows were affected, return a product not found error
+      return res.status(404).json({ error: "Product not found" });
+    }
+  } catch (error) {
+    console.error("Error updating product status:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 }
 
 
@@ -70,4 +109,6 @@ module.exports = {
   httpGetProductById,
   httpDeleteProduct,
   httpUpdateProduct,
+  httpGetAutocompleteProducts,
+  httpUpdateProductStatus,
 };

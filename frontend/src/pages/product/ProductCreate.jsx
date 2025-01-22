@@ -65,7 +65,7 @@ const ProductCreate = () => {
         <Link to="/products" className="btn btn-secondary mb-3">
           Back to Product List
         </Link>
-        <h2>Add New Product</h2>
+        <h2 className='display-6 text-center'>Add New Product</h2>
         {error && <div className="alert alert-danger">{error}</div>}
         {successMessage && <div className="alert alert-success">{successMessage}</div>}
         <form onSubmit={handleSubmit}>
@@ -92,7 +92,7 @@ const ProductCreate = () => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Price</label>
+            <label className="form-label">Price (Tk.)</label>
             <input
               type="number"
               className="form-control"
@@ -103,7 +103,7 @@ const ProductCreate = () => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Weight</label>
+            <label className="form-label">Weight (gm.)</label>
             <input
               type="text"
               className="form-control"
@@ -114,7 +114,7 @@ const ProductCreate = () => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Quantity</label>
+            <label className="form-label">Stock Quantity</label>
             <input
               type="number"
               className="form-control"

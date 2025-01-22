@@ -5,7 +5,7 @@ const cors = require('cors');
 const productsRouter = require("./routes/products/products.routers");
 const promotionsRouter = require("./routes/promotion/promotion.routers");
 const ordersRouter = require('./routes/order/orders.routers');
-cogit nst authRouter = require("./routes/auth/auth.routers");
+const authRouter = require("./routes/auth/auth.routers");
 const morgan = require('morgan');
 
 

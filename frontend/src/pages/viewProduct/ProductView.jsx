@@ -1,19 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import ProductCard from "../../components/ProductCard";
 import ProductModal from "../../components/ProductModel";
-import { FaShoppingCart } from "react-icons/fa"; // Cart icon
 
 const ProductVideoPage = () => {
+  const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const products = [
-    { id: 1, name: "Product 1", details: "This is a description of Product 1", price: "$25" },
-    { id: 2, name: "Product 2", details: "This is a description of Product 2", price: "$50" },
-    { id: 3, name: "Product 3", details: "This is a description of Product 3", price: "$75" },
-  ];
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/products/");
+        const data = await response.json();
+        if (data.status === "OK") {
+          setProducts(data.data); // Set products from API response
+        } else {
+          console.error("Failed to fetch products:", data);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleAddToCart = (product) => {
     setCart([...cart, product]);
@@ -31,7 +44,7 @@ const ProductVideoPage = () => {
 
   return (
     <div className="container mt-5">
-      <h1 className="mb-4 text-center display-4">Find Your Prudct</h1>
+      <h1 className="mb-4 text-center display-4">Find Your Product</h1>
 
       {/* Cart Information */}
       <div className="mt-5">
@@ -39,16 +52,15 @@ const ProductVideoPage = () => {
         <ul>
           {cart.map((item, index) => (
             <li key={index}>
-              {item.name} - {item.price}
+              {item.name} - ${item.price}
             </li>
           ))}
         </ul>
       </div>
 
-
       <Row>
         {products.map((product) => (
-          <Col md={4} key={product.id} className="mb-4 ">
+          <Col md={4} key={product.id} className="mb-4">
             <ProductCard
               product={product}
               onQuickView={handleQuickView}
@@ -57,8 +69,6 @@ const ProductVideoPage = () => {
           </Col>
         ))}
       </Row>
-
-    
 
       {/* Product Modal */}
       <ProductModal
