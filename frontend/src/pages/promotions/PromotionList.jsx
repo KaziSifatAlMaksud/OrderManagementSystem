@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { Link } from "react-router-dom";
-import config from "../../config/config";
+import EditPromotionModal from "../../components/EditPromotionModal"; // Import your EditPromotionModal component
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal"; // Import Delete Confirmation Modal
 
 const PromotionTable = () => {
   const [promotions, setPromotions] = useState([]);
+  const [selectedPromotion, setSelectedPromotion] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
-        const response = await fetch(`${config}/promotions/`);
+        const response = await fetch("http://localhost:5000/promotions/");
         const data = await response.json();
 
         if (data.status === "OK" && Array.isArray(data.data)) {
-          // Map API data to include an isActive field for handling status
           const mappedPromotions = data.data.map((promotion) => ({
             ...promotion,
-            isActive: promotion.status === 1, // Convert status to boolean
+            isActive: promotion.status === 1,
           }));
           setPromotions(mappedPromotions);
         } else {
@@ -30,14 +33,30 @@ const PromotionTable = () => {
     fetchPromotions();
   }, []);
 
-  const handleEdit = (id) => {
-    console.log("Edit promotion with id:", id);
-    // Implement edit functionality (you can navigate to the edit page or open a modal)
+  const handleEdit = (promotion) => {
+    setSelectedPromotion(promotion);
+    setShowEditModal(true);
   };
 
-  const handleDelete = (id) => {
-    console.log("Delete promotion with id:", id);
-    // Implement delete functionality (e.g., API call to delete promotion)
+  const handleDelete = (promotion) => {
+    setSelectedPromotion(promotion);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedPromotion) {
+      try {
+        await fetch(`http://localhost:5000/promotions/${selectedPromotion.id}`, {
+          method: "DELETE",
+        });
+        setPromotions((prevPromotions) =>
+          prevPromotions.filter((promo) => promo.id !== selectedPromotion.id)
+        );
+        setShowDeleteModal(false);
+      } catch (error) {
+        console.error("Error deleting promotion:", error);
+      }
+    }
   };
 
   const handleStatusChange = (id) => {
@@ -53,7 +72,7 @@ const PromotionTable = () => {
   return (
     <>
       <Header />
-      <div className="container mt-5">
+      <div className="container mt-5 content-background">
         <h1 className="mb-4">Promotion List</h1>
 
         <Link to="/add-promotion">
@@ -103,13 +122,13 @@ const PromotionTable = () => {
                 <td>
                   <button
                     className="btn btn-warning"
-                    onClick={() => handleEdit(promotion.id)}
+                    onClick={() => handleEdit(promotion)}
                   >
                     <i className="bi bi-pencil-square"></i> Edit
                   </button>
                   <button
                     className="btn btn-danger ms-2"
-                    onClick={() => handleDelete(promotion.id)}
+                    onClick={() => handleDelete(promotion)}
                   >
                     <i className="bi bi-trash"></i> Delete
                   </button>
@@ -119,6 +138,28 @@ const PromotionTable = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Edit Modal */}
+      <EditPromotionModal
+        show={showEditModal}
+        promotion={selectedPromotion}
+        onClose={() => setShowEditModal(false)}
+        onSave={(updatedPromotion) => {
+          setPromotions((prev) =>
+            prev.map((promo) =>
+              promo.id === updatedPromotion.id ? updatedPromotion : promo
+            )
+          );
+          setShowEditModal(false);
+        }}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onDelete={confirmDelete}
+      />
     </>
   );
 };

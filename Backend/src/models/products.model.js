@@ -110,8 +110,8 @@ async function deleteProduct(productId) {
 async function updateProduct(productId, product) {
   const { name, description, weight, price, qty, status } = product;
 
-  console.log("Updating product:", product);
-  console.log("Product ID:", productId);
+
+
   return new Promise((resolve, reject) => {
     const query =
       "UPDATE product SET name=?, description=?, weight=?,status=?, price=?, qty=? WHERE id=?";
@@ -122,7 +122,7 @@ async function updateProduct(productId, product) {
         if (error) {
           return reject({ message: "Error updating product:", error: error });
         }
-        if (results.affectedRows == 0) {
+        if (results.affectedRows === 0) {
           return resolve({ message: `Product with ID ${productId} not found` });
         }
         return resolve({ status: "Product updated successfully", results });

@@ -30,11 +30,14 @@ async function getPromotionById(promotionId) {
     });
 }
 
+
 // POST a new promotion
+
 async function postPromotion(promotion) {
     return new Promise((resolve, reject) => {
+        // Insert promotion
         const query =
-            "INSERT INTO promotions (title, start_date, end_date, promotion_type, discount, weight_id) VALUES (?, ?, ?, ?, ?, ?)";
+            "INSERT INTO promotions (title, start_date, end_date, promotion_type, discount) VALUES (?, ?, ?, ?, ?)";
         connection.query(
             query,
             [
@@ -42,18 +45,53 @@ async function postPromotion(promotion) {
                 promotion.start_date,
                 promotion.end_date,
                 promotion.promotion_type,
-                promotion.discount,
-                promotion.weight_id,
+                promotion.discount
             ],
             (error, results) => {
                 if (error) {
                     return reject({ message: "Error creating promotion:", error: error });
                 }
-                return resolve({ status: "created", result: promotion });
+
+                // Get the promotion ID
+                const promotionId = results.insertId;
+                console.log("New promotion created with ID:", promotionId);
+
+                // If there are products, insert promotion items
+                if (promotion.products && promotion.products.length > 0) {
+                    const promotionItems = promotion.products.map(productId => [
+                        promotionId,
+                        productId
+                    ]);
+
+                    connection.query(
+                        "INSERT INTO promotion_item_details (promotion_id, product_id) VALUES ?",
+                        [promotionItems],
+                        (error) => {
+                            if (error) {
+                                return reject({ message: "Error adding promotion items:", error: error });
+                            }
+
+                            resolve({
+                                status: "success",
+                                message: "Promotion created and items added successfully!",
+                                promotionId: promotionId
+                            });
+                        }
+                    );
+                } else {
+                    // Resolve if no products are provided
+                    resolve({
+                        status: "success",
+                        message: "Promotion created successfully, but no items provided.",
+                        promotionId: promotionId
+                    });
+                }
             }
         );
     });
 }
+
+
 
 // DELETE a promotion by id
 async function deletePromotion(promotionId) {

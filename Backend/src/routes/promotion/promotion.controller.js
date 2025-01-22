@@ -27,28 +27,35 @@ async function httpGetPromotionById(req, res) {
 
 // POST a new promotion
 async function httpAddNewPromotion(req, res) {
-    const { title, start_date, end_date, promotion_type, discount, weight_id } = req.body;
+    const { title, start_date, end_date, promotion_type, discount, products } = req.body;
 
-    if (!title || !start_date || !end_date || !promotion_type || !discount) {
-        return res.status(400).json({ error: "Missing required fields" });
+    // Check for missing required fields or products
+    if (!title || !start_date || !end_date || !promotion_type || !discount || !products || !products.length) {
+        return res.status(400).json({ error: "Missing required fields or products" });
     }
-
     const promotion = {
         title,
         start_date,
         end_date,
         promotion_type,
         discount,
-        weight_id,
+        products,
     };
 
     try {
         const newPromotion = await postPromotion(promotion);
-        return res.status(201).json(newPromotion);
+        return res.status(201).json({
+            message: "Promotion created successfully, with products!",
+            promotion: newPromotion,
+        });
+
     } catch (error) {
+        console.error("Error creating promotion:", error);
         return res.status(500).json({ error: "Error creating promotion" });
     }
 }
+
+
 
 // DELETE a promotion by ID
 async function httpDeletePromotion(req, res) {

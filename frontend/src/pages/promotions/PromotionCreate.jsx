@@ -163,14 +163,12 @@ const PromotionCreate = () => {
               <option value="weight_based">Discount Based on Weight</option>
             </select>
           </div>
-          {promotion.promotion_type && (
+          {promotion.promotion_type && promotion.promotion_type !== 'weight_based' && (
             <div className="mb-3">
               <label className="form-label">
                 {promotion.promotion_type === 'percentage'
-                  ? 'Discount Percentage'
-                  : promotion.promotion_type === 'fixed'
-                  ? 'Fixed Discount Amount'
-                  : 'Discount Per Unit Weight'}
+                  ? 'Discount Percentage (%)'
+                  : 'Fixed Discount Amount (Tk.)'}
               </label>
               <input
                 type="number"
