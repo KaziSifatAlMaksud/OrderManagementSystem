@@ -34,7 +34,7 @@ const UserHeader = () => {
       >
         <Container>
           <Navbar.Brand
-            href="/dashboard"
+            href="/"
             style={{ fontWeight: "bold", color: "#fff" }}
           >
             Sifat
@@ -46,7 +46,7 @@ const UserHeader = () => {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link
-                href="/dashboard"
+                href="/"
                 style={{
                   color: "#fff",
                   margin: "0 10px",
@@ -70,19 +70,23 @@ const UserHeader = () => {
                 Explore
               </Nav.Link>
             </Nav>
-            <Nav>
-              {name ? ( // If session exists, show Profile and Logout options
+          <Nav>
+            {name ? ( // If session exists, show Profile and Logout options
                 <NavDropdown
-                  title={`Hi, ${name}`}
-                  id="basic-nav-dropdown"
-                  style={{ color: "#fff" }}
+                title={`Hi, ${name}`}
+                id="basic-nav-dropdown"
                 >
-                  <NavDropdown.Item href="/profile">Profile</NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
+                <NavDropdown.Item href="/profile" disabled >
+                    Profile
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={handleLogout}>
+                    Logout
+                </NavDropdown.Item>
                 </NavDropdown>
-              ) : null}
+            ) : null}
             </Nav>
+
           </Navbar.Collapse>
         </Container>
       </Navbar>

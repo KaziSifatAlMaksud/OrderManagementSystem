@@ -5,6 +5,7 @@ const {
     createOrder,
     deleteOrderById,
     updateOrderById,
+    getProductInfoById,
 } = require("../../models/orders.model");
 
 const httpGetAllOrders = (req, res) => {
@@ -32,10 +33,22 @@ const httpUpdateOrder = (req, res) => {
     res.status(200).json({ message: `Order with ID: ${id} updated`, data: updatedData });
 };
 
+const httpGetProductInfo = async (req, res) => {
+    const { id, qty } = req.params;
+
+    try {
+        const productInfo = await getProductInfoById(id, qty);
+        return res.status(200).json(productInfo);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error retrieving product information', error });
+    }
+};
+
 module.exports = {
     httpGetAllOrders,
     httpGetOrderById,
     httpAddNewOrder,
     httpDeleteOrder,
     httpUpdateOrder,
+    httpGetProductInfo,
 };

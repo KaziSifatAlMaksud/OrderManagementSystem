@@ -1,17 +1,25 @@
-import React from "react";
-import { Button, Card } from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Card, InputGroup, FormControl } from "react-bootstrap";
 import { FaShoppingCart, FaEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
+
 const ProductCard = ({ product, onQuickView, onAddToCart }) => {
   const navigate = useNavigate(); // Initialize useNavigate
+  const [quantity, setQuantity] = useState(1); // State for quantity
+
+  const handleQuantityChange = (e) => {
+    const value = Math.max(1, parseInt(e.target.value, 10));
+    setQuantity(value);
+  };
 
   const handleOrderNow = () => {
-    // Redirect to the /placeorder page with the product ID as a query parameter
-    navigate(`/placeorder?id=${product.id}`);
+    // Redirect to the /placeorder page with the product ID and quantity as query parameters
+    navigate(`/placeorder?id=${product.id}&quantity=${quantity}`);
   };
 
   return (
+   
     <Card className="position-relative shadow-sm hover-effect hover-scale-up">
       {/* Eye Icon (Quick View) */}
       <Button
@@ -37,6 +45,17 @@ const ProductCard = ({ product, onQuickView, onAddToCart }) => {
         <Card.Text>
           <strong>Tk. {product.price}</strong>
         </Card.Text>
+        <Card.Text>Stock: {product.qty}</Card.Text>
+       <InputGroup className="mb-3 w-50">
+          <Button variant="outline-secondary" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
+          <FormControl
+            type="number"
+            value={quantity}
+            onChange={handleQuantityChange}
+            min="1"
+          />
+          <Button variant="outline-secondary" onClick={() => setQuantity(quantity + 1)}>+</Button>
+        </InputGroup>
         <Button variant="success" onClick={handleOrderNow}>
           Order Now
         </Button>

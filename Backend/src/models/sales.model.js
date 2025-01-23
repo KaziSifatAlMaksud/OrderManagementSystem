@@ -10,6 +10,6 @@ async function getSales() {
       return resolve({ status: "OK", data: results });
     });
   });
-} 
+}
 
 module.exports = { getSales };

@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(morgan('combined'));
 app.use('/products', productsRouter);
 app.use('/promotions', promotionsRouter);
-// app.use('/orders', ordersRouter);
+app.use('/orders', ordersRouter);
 
 app.use("/", authRouter);
 
