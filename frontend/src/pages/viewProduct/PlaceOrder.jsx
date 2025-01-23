@@ -1,26 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Card, Col, Row } from "react-bootstrap";
-import { FaShoppingCart } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { Form, Button, Card, Col, Row, Modal } from "react-bootstrap";
+import { useLocation, useNavigate } from "react-router-dom"; // Import useNavigate
 import UserHeader from "../../components/UserHader";
 
 const PlaceOrderPage = () => {
   const [orderDetails, setOrderDetails] = useState({
     name: "",
     email: "",
-    address: "",
-    phone: "",
-    products: [],
+    product_id: "",
+    qty: 1,
+    unit_price: 0,
+    discount: 0,
+    total_price: 0,
   });
 
   const [products, setProducts] = useState([]); // State to hold products
   const [timeLeft, setTimeLeft] = useState(null); // State to hold countdown time
+  const [showModal, setShowModal] = useState(false); // Modal visibility state
+  const [loading, setLoading] = useState(false); // Loading state
   const location = useLocation(); // Get the current location
+  const navigate = useNavigate(); // For navigation
 
-  // Extract the 'id' query parameter from the URL
+  // Extract the 'id' and 'quantity' query parameters from the URL
   const queryParams = new URLSearchParams(location.search);
   const productId = queryParams.get("id");
   const quantity = queryParams.get("quantity");
+
+  // Fetch initial data from sessionStorage
+  useEffect(() => {
+    const userSession = sessionStorage.getItem("Sifat");
+    const sessionData = userSession ? JSON.parse(userSession) : null;
+
+    if (!sessionData || sessionData.type !== "user") {
+      navigate("/signin"); // Redirect to sign-in page if no session or invalid type
+      return;
+    }
+
+    const storedName = sessionData.name || sessionStorage.getItem("name") || "";
+    const storedEmail = sessionData.email || sessionStorage.getItem("email") || "";
+
+    setOrderDetails((prevState) => ({
+      ...prevState,
+      name: storedName,
+      email: storedEmail,
+    }));
+  }, [navigate]);
 
   // Fetch specific product information
   useEffect(() => {
@@ -70,14 +94,53 @@ const PlaceOrderPage = () => {
   // Handle input change for customer details
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setOrderDetails({ ...orderDetails, [name]: value });
+    setOrderDetails((prevState) => ({ ...prevState, [name]: value }));
   };
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Order placed successfully!");
-    console.log(orderDetails);
+    setOrderDetails((prevState) => ({
+      ...prevState,
+      product_id: products[0]?.id, 
+      unit_price: products[0]?.price, // Assuming only one product
+      qty: quantity,
+      discount: products[0]?.discount_price,
+      total_price: (products[0]?.price * quantity) - products[0]?.discount_price,
+    }));
+    setShowModal(true); // Show the modal with the order summary
+  };
+
+  // Handle order confirmation
+  const handleOrderConfirm = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:5000/orders/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderDetails),
+      });
+
+      if (response.ok) {
+        alert("Order placed successfully!");
+        navigate("/orders"); // Redirect to orders page or elsewhere
+      } else {
+        alert("Failed to place order");
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+      setShowModal(false); // Close the modal
+    }
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setShowModal(false);
   };
 
   return (
@@ -112,26 +175,6 @@ const PlaceOrderPage = () => {
                       required
                     />
                   </Form.Group>
-                  <Form.Group controlId="formAddress">
-                    <Form.Label>Address</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="address"
-                      value={orderDetails.address}
-                      onChange={handleChange}
-                      required
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formPhone">
-                    <Form.Label>Phone</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="phone"
-                      value={orderDetails.phone}
-                      onChange={handleChange}
-                      required
-                    />
-                  </Form.Group>
                 </Card.Body>
               </Card>
 
@@ -143,30 +186,64 @@ const PlaceOrderPage = () => {
                     {products.length > 0 ? (
                       products.map((product) => (
                         <Col md={12} className="mb-3" key={product.id}>
-                          <Card>
+                          <Card className="shadow-sm">
                             <Card.Body>
-                               {product.end_date && (
-                                <Card.Text >
-                                  <p>Time Left: {formatTimeLeft(timeLeft)}</p>
-                                </Card.Text>
-                              )}
-                              <Card.Title>{product.product_name}</Card.Title>
-                              <Card.Text>
-                                <strong>Price: {product.price}</strong>
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Discount Price: {product.discount_price}</strong>
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Quantity: {product.requestedQuantity}</strong>
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>Total Price: {product.discount_price * product.requestedQuantity}</strong>
-                              </Card.Text>
-                             
-                              <Button variant="success" type="submit">
-                                Place Order
-                              </Button>
+                              {/* Product Information */}
+                              <div className="d-flex flex-column mb-3">
+                                <h5 className="mb-2" style={{ fontWeight: 'bold' }}>{product.product_name}</h5>
+                                <p className="mb-3">{product.product_description}</p>
+
+                                {product.end_date && (
+                                  <div className="text-muted ">
+                                    <p className="mb-0 text-success">
+                                      <strong>Time Left:</strong> {formatTimeLeft(timeLeft)}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Invoice Table */}
+                              <div className="table-responsive">
+                                <table className="table table-borderless">
+                                  <tbody>
+                                    <tr>
+                                      <td><strong>Unit Price:</strong></td>
+                                      <td>{product.price} Tk.</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                      <td><strong>Quantity:</strong></td>
+                                      <td>{product.requestedQuantity}</td>
+                                    </tr>
+                                    
+                                    <tr>
+                                      <td><strong>Total Amount(Quantity * Price):</strong></td>
+                                      <td>
+                                        {product.price * product.requestedQuantity} Tk.
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td><strong>Discount Price:</strong></td>
+                                      <td>{product.discount_price}Tk.</td>
+                                    </tr>
+                                     <tr>
+                                      <td><strong>Payable Amount:</strong></td>
+                                      <td>{(product.price * product.requestedQuantity) - product.discount_price }Tk.</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+
+                              {/* Action Button */}
+                              <div className="d-flex justify-content-between">
+                                <Button
+                                  variant="success"
+                                  type="submit"
+                                  className="btn-lg"
+                                >
+                                  Place Order
+                                </Button>
+                              </div>
                             </Card.Body>
                           </Card>
                         </Col>
@@ -188,13 +265,67 @@ const PlaceOrderPage = () => {
                 <p>If you have any questions, feel free to contact us at:</p>
                 <ul>
                   <li>Email: kazi.sifat2013@gmail.com</li>
-                  <li>Phone: +01537244273</li>
-                  <li>Address: Moynarbag, Badda, Dhaka Bangladesh</li>
+                  <li>Phone: +01537244238</li>
+                  <li>Address: Dhaka, Bangladesh</li>
                 </ul>
               </Card.Body>
             </Card>
           </Col>
         </Row>
+
+        {/* Modal */}
+        <Modal show={showModal} onHide={handleModalClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Your Order</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <h5>Order Summary</h5>
+            <table className="table table-borderless">
+              <tbody>
+                <tr>
+                  <td><strong>Name:</strong></td>
+                  <td>{orderDetails.name}</td>
+                </tr>
+                <tr>
+                  <td><strong>Email:</strong></td>
+                  <td>{orderDetails.email}</td>
+                </tr>
+                <tr>
+                  <td><strong>Product:</strong></td>
+                  <td>{products[0]?.product_name}</td>
+                </tr>
+                <tr>
+                  <td><strong>Unit Price:</strong></td>
+                  <td>{orderDetails.unit_price} Tk.</td>
+                </tr>
+                <tr>
+                  <td><strong>Quantity:</strong></td>
+                  <td>{orderDetails.qty}</td>
+                </tr>
+                <tr>
+                  <td><strong>Total Amount (Quantity * Price):</strong></td>
+                  <td>{orderDetails.unit_price * orderDetails.qty} Tk.</td>
+                </tr>
+                <tr>
+                  <td><strong>Discount Price:</strong></td>
+                  <td>{orderDetails.discount} Tk.</td>
+                </tr>
+                <tr>
+                  <td><strong>Payable Amount:</strong></td>
+                  <td>{orderDetails.total_price} Tk.</td>
+                </tr>
+              </tbody>
+            </table>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleModalClose}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleOrderConfirm} disabled={loading}>
+              {loading ? "Placing Order..." : "Confirm Order"}
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </>
   );

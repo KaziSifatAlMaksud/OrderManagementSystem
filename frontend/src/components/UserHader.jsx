@@ -9,10 +9,12 @@ const UserHeader = () => {
   useEffect(() => {
     const userSession = sessionStorage.getItem("Sifat");
     const sessionData = userSession ? JSON.parse(userSession) : null;
+
     if (sessionData && sessionData.type === "user") {
-      setName(sessionData.name);
+      const storedName = sessionData.name || sessionStorage.getItem("name") || "";
+      setName(storedName);
     } else {
-      navigate("/signin"); 
+      navigate("/signin"); // Redirect to signin if no valid session
     }
   }, [navigate]);
 
@@ -70,23 +72,22 @@ const UserHeader = () => {
                 Explore
               </Nav.Link>
             </Nav>
-          <Nav>
-            {name ? ( // If session exists, show Profile and Logout options
+            <Nav>
+              {name ? ( // If user is logged in, show profile and logout options
                 <NavDropdown
-                title={`Hi, ${name}`}
-                id="basic-nav-dropdown"
+                  title={`Hi, ${name}`}
+                  id="basic-nav-dropdown"
                 >
-                <NavDropdown.Item href="/profile" disabled >
+                  <NavDropdown.Item href="/profile" disabled>
                     Profile
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item onClick={handleLogout}>
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={handleLogout}>
                     Logout
-                </NavDropdown.Item>
+                  </NavDropdown.Item>
                 </NavDropdown>
-            ) : null}
+              ) : null}
             </Nav>
-
           </Navbar.Collapse>
         </Container>
       </Navbar>

@@ -34,23 +34,43 @@ async function getOrderById(orderId) {
 // POST a new order
 async function createOrder(order) {
     return new Promise((resolve, reject) => {
-        const query =
-            "INSERT INTO orders (user_id, item_id, promotion_id, qty, status) VALUES (?, ?, ?, ?, ?)";
-        connection.query(
-            query,
-            [order.user_id, order.item_id, order.promotion_id, order.qty, "Pending"],
-            (error, results) => {
-                if (error) {
-                    return reject({ message: "Error creating order:", error });
-                }
-                return resolve({
-                    status: "created",
-                    data: { id: results.insertId, ...order, status: "Pending" },
-                });
+        // Step 1: Get user_id using the email
+        const getUserQuery = "SELECT id FROM users WHERE email = ?";
+
+        connection.query(getUserQuery, [order.email], (error, results) => {
+            if (error) {
+                return reject({ message: "Error fetching user:", error });
             }
-        );
+
+            if (results.length == 0) {
+                return reject({ message: "User not found with provided email" });
+            }
+
+            // Step 2: Extract user_id from query result
+            const userId = results[0].id;
+
+            // Step 3: Proceed to insert the order with user_id
+            const query =
+                "INSERT INTO orders (user_id, status, qty, net_total, product_id, unit_price, discount) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            connection.query(
+                query,
+                [userId, 1, order.qty, order.total_price, order.product_id, order.unit_price, order.discount || 0], // Default discount to 0 if not provided
+                (error, results) => {
+                    if (error) {
+                        return reject({ message: "Error creating order:", error });
+                    }
+
+                    return resolve({
+                        status: "created",
+                        data: { id: results.insertId, ...order, status: "Pending" },
+                    });
+                }
+            );
+        });
     });
 }
+
 
 // DELETE order by ID
 async function deleteOrderById(orderId) {

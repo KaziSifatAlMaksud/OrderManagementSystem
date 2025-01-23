@@ -17,10 +17,28 @@ const httpGetOrderById = (req, res) => {
     res.status(200).json({ message: `Retrieved order with ID: ${id}` });
 };
 
-const httpAddNewOrder = (req, res) => {
-    const orderData = req.body;
-    res.status(201).json({ message: 'Order added successfully', data: orderData });
-};
+
+async function httpAddNewOrder(req, res) {
+    const { email, product_id, qty, unit_price, total_price, discount } = req.body;
+
+    // Check for required fields
+    if (!email || !product_id || !qty || !unit_price || !total_price) {
+        return res.status(400).json({ error: "Missing required fields" });
+    } else {
+        // Construct product object, discount is optional
+        const order = {
+            email,
+            product_id,
+            qty,
+            unit_price,
+            total_price,
+            discount: discount || 0
+        };
+
+        return res.status(201).json(await createOrder(order));
+    }
+}
+
 
 const httpDeleteOrder = (req, res) => {
     const { id } = req.params;
