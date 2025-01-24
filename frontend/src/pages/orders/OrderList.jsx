@@ -96,7 +96,7 @@ const OrderList = () => {
     <>
       <Header />
       <div className="container mt-5">
-        <h1 className="mb-4">Order List</h1>
+        <h1 className="mb-4 display-6">Order List</h1>
 
         <table className="table table-striped table-bordered table-hover">
           <thead className="thead-dark">

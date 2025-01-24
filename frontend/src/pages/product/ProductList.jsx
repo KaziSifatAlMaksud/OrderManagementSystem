@@ -135,7 +135,7 @@ const ProductList = () => {
     <>
       <Header />
       <div className="container mt-5">
-        <h1 className="mb-4">Product List</h1>
+        <h1 className="mb-4 display-4">Product List</h1>
 
         <Link to="/add-product">
           <button className="btn btn-primary mb-3">Add Product +</button>
