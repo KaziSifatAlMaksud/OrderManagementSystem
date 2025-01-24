@@ -1,4 +1,4 @@
-const { createUser, getUserByEmail } = require("../../models/user.model");
+const { createUser, getUserByEmail, getDashbordInfo } = require("../../models/user.model");
 const bcrypt = require("bcrypt");
 // Register a new user
 const httpRegisterUser = async (req, res) => {
@@ -33,8 +33,20 @@ const httpRegisterUser = async (req, res) => {
     }
 };
 
-// User login
+// GET
+async function httpGetDashbordInfo(req, res) {
+    try {
+        const dashboardInfo = await getDashbordInfo();  // Wait for the function to return data
+        return res.status(200).json(dashboardInfo);  // Return the result as JSON
+    } catch (error) {
+        console.error("Error fetching dashboard info:", error);
+        return res.status(500).json({ error: "Failed to fetch dashboard information" });
+    }
+}
 
+
+
+// User login
 const httpLoginUser = async (req, res) => {
     const { email, password, type } = req.body; // Include `type` in request body
 
@@ -80,4 +92,5 @@ const httpLoginUser = async (req, res) => {
 module.exports = {
     httpRegisterUser,
     httpLoginUser,
+    httpGetDashbordInfo,
 };

@@ -3,7 +3,43 @@ const { connection } = require("../utils/dbConnect");
 // GET all orders
 async function getAllOrders() {
     return new Promise((resolve, reject) => {
-        connection.query("SELECT * FROM orders", (error, results) => {
+        const query = `
+            SELECT 
+                o.id,
+                o.status,
+                o.net_total,
+                o.qty,
+                o.discount,
+                u.name AS user_name,
+                u.email AS user_email,
+                p.name AS product_name,
+                p.price AS product_price
+            FROM 
+                orders o
+            LEFT JOIN 
+                users u ON o.user_id = u.id
+            LEFT JOIN 
+                product p ON o.product_id = p.id;
+        `;
+
+        connection.query(query, (error, results) => {
+            if (error) {
+                return reject({ message: "Error getting orders:", error });
+            }
+            return resolve({ status: "OK", data: results });
+        });
+    });
+}
+
+// GET all orders
+async function getOrderForUser(email) {
+    return new Promise((resolve, reject) => {
+        const query = `
+            SELECT o.* 
+            FROM orders o
+            INNER JOIN users u ON o.user_id = u.id
+            WHERE u.email = ?`;
+        connection.query(query, [email], (error, results) => {
             if (error) {
                 return reject({ message: "Error getting orders:", error });
             }
@@ -167,4 +203,5 @@ module.exports = {
     deleteOrderById,
     updateOrderById,
     getProductInfoById,
+    getOrderForUser,
 };

@@ -7,18 +7,18 @@ const {
     httpUpdateProduct,
     httpUpdateProductStatus,
     httpGetAutocompleteProducts,
-    httpGetActiveProducts,
+    httpGetProducts,
 
 } = require('./products.controller');
 
 const productsRouter = express.Router();
 productsRouter.get('/', httpGetAllProducts);
+productsRouter.get('/active', httpGetProducts);
 productsRouter.get('/:id', httpGetProductById);
 productsRouter.post('/', httpAddNewProduct);
 productsRouter.delete('/:id', httpDeleteProduct);
 productsRouter.put('/:id', httpUpdateProduct);
 productsRouter.put('/action/:id', httpUpdateProductStatus);
 productsRouter.get('/', httpGetAutocompleteProducts);
-productsRouter.get('/onactive', httpGetActiveProducts);
 
 module.exports = productsRouter;

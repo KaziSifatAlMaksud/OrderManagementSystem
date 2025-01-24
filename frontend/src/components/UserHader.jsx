@@ -71,6 +71,18 @@ const UserHeader = () => {
               >
                 Explore
               </Nav.Link>
+               <Nav.Link
+                href="/order-history"
+                style={{
+                  color: "#fff",
+                  margin: "0 10px",
+                  transition: "color 0.3s",
+                }}
+                onMouseEnter={(e) => (e.target.style.color = "#ffeb3b")}
+                onMouseLeave={(e) => (e.target.style.color = "#fff")}
+              >
+                Order History
+              </Nav.Link>
             </Nav>
             <Nav>
               {name ? ( // If user is logged in, show profile and logout options

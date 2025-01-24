@@ -5,12 +5,14 @@ const {
     httpGetOrderById,
     httpDeleteOrder,
     httpUpdateOrder,
-    httpGetProductInfo
+    httpGetProductInfo,
+    httpGetAllOrdersHistry
 } = require('./orders.controller');
 
 const ordersRouter = express.Router();
 
 ordersRouter.get('/', httpGetAllOrders); // Get all orders
+ordersRouter.post('/history', httpGetAllOrdersHistry); // Get all orders
 ordersRouter.get('/:id', httpGetOrderById); // Get a single order by ID
 ordersRouter.post('/', httpAddNewOrder); // Add a new order
 ordersRouter.delete('/:id', httpDeleteOrder); // Delete an order by ID

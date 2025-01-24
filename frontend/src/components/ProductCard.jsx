@@ -42,6 +42,10 @@ const ProductCard = ({ product, onQuickView, onAddToCart }) => {
       <Card.Body>
         <Card.Title className="mt-5">{product.name}</Card.Title>
         <Card.Text>{product.description}</Card.Text>
+      
+          {product.promotion_active === 'true' ? (
+            <span className="badge bg-primary">Promotion</span> // Show this when promotion is active
+          ) : null}
         <Card.Text>
           <strong>Tk. {product.price}</strong>
         </Card.Text>

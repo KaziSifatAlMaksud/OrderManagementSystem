@@ -19,6 +19,17 @@ async function httpGetAllProducts(req, res) {
     return res.status(500).json({ error: "Failed to fetch products" });
   }
 }
+// GET
+async function httpGetProducts(req, res) {
+  try {
+    const products = await getactiveProducts();
+    return res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching all Active products:", error);
+    return res.status(500).json({ error: "Failed to fetch products" });
+  }
+}
+
 
 
 
@@ -111,15 +122,7 @@ async function httpUpdateProduct(req, res) {
   }
 }
 
-async function httpGetActiveProducts(req, res) {
-  try {
-    const activeProducts = await getactiveProducts();
-    return res.status(200).json(activeProducts);
-  } catch (error) {
-    console.error("Error fetching active products:", error);
-    return res.status(500).json({ error: "Failed to fetch active products" });
-  }
-}
+
 
 module.exports = {
   httpGetAllProducts,
@@ -129,5 +132,5 @@ module.exports = {
   httpUpdateProduct,
   httpGetAutocompleteProducts,
   httpUpdateProductStatus,
-  httpGetActiveProducts,
+  httpGetProducts,
 };

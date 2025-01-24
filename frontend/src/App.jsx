@@ -8,6 +8,7 @@ import Products from "./pages/product/ProductList";
 import AddProduct from "./pages/product/ProductCreate";
 import Promotions from "./pages/promotions/PromotionList";
 import AddPromotion from "./pages/promotions/PromotionCreate";
+import OrderList from "./pages/orders/OrderList";
 // import Order from "./pages/order/OrderList";
 
 import ViewProduct from "./pages/viewProduct/ProductView";
@@ -15,6 +16,8 @@ import PlaceOrderPage from "./pages/viewProduct/PlaceOrder";
 import Signup from "./pages/users/Signup";
 import Signin from "./pages/users/Signin";
 import Dashboard from "./pages/Dashboard";
+// import Order from "./pages/orders/OrderList";
+import OrderHistory from "./pages/viewProduct/OrderHistory";
 // import Register from "./pages/users/Register";
 
 const App = () => {
@@ -32,6 +35,8 @@ const App = () => {
         <Route path="/add-Promotion" element={<AddPromotion />} />
         <Route path="/viewproduct" element={<ViewProduct />} />
         <Route path="/placeorder" element={<PlaceOrderPage />} />
+        <Route path="/orders" element={<OrderList />} />
+        <Route path="/order-history" element={<OrderHistory />} />
       </Routes>
     </div>
   );

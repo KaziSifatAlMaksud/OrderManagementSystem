@@ -14,25 +14,23 @@ const PlaceOrderPage = () => {
     total_price: 0,
   });
 
-  const [products, setProducts] = useState([]); // State to hold products
-  const [timeLeft, setTimeLeft] = useState(null); // State to hold countdown time
-  const [showModal, setShowModal] = useState(false); // Modal visibility state
-  const [loading, setLoading] = useState(false); // Loading state
-  const location = useLocation(); // Get the current location
-  const navigate = useNavigate(); // For navigation
+  const [products, setProducts] = useState([]); 
+  const [timeLeft, setTimeLeft] = useState(null); 
+  const [showModal, setShowModal] = useState(false); 
+  const [loading, setLoading] = useState(false); 
+  const location = useLocation(); 
+  const navigate = useNavigate(); 
 
-  // Extract the 'id' and 'quantity' query parameters from the URL
   const queryParams = new URLSearchParams(location.search);
   const productId = queryParams.get("id");
   const quantity = queryParams.get("quantity");
 
-  // Fetch initial data from sessionStorage
   useEffect(() => {
     const userSession = sessionStorage.getItem("Sifat");
     const sessionData = userSession ? JSON.parse(userSession) : null;
 
     if (!sessionData || sessionData.type !== "user") {
-      navigate("/signin"); // Redirect to sign-in page if no session or invalid type
+      navigate("/signin"); 
       return;
     }
 
@@ -46,7 +44,7 @@ const PlaceOrderPage = () => {
     }));
   }, [navigate]);
 
-  // Fetch specific product information
+
   useEffect(() => {
     if (productId && quantity) {
       fetch(`http://localhost:5000/orders/${productId}/${quantity}`)
@@ -124,8 +122,7 @@ const PlaceOrderPage = () => {
       });
 
       if (response.ok) {
-        alert("Order placed successfully!");
-        navigate("/orders"); // Redirect to orders page or elsewhere
+        navigate("/order-history"); // Redirect to orders page or elsewhere
       } else {
         alert("Failed to place order");
       }

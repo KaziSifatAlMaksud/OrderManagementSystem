@@ -12,10 +12,9 @@ async function getProducts() {
   });
 }
 
-// GET
-async function getActiveProducts() {
+async function getactiveProducts() {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM product", (error, results) => {
+    connection.query("SELECT p.*, CASE WHEN pr.start_date <= CURDATE() AND pr.end_date >= CURDATE() THEN 'true' ELSE 'false' END AS promotion_active FROM product p LEFT JOIN promotion_item_details pid ON p.id = pid.product_id LEFT JOIN promotions pr ON pr.id = pid.promotion_id WHERE p.status = 1 GROUP BY p.id;", (error, results) => {
       if (error) {
         return reject({ message: "Error getting products:", error: error });
       }
@@ -24,16 +23,9 @@ async function getActiveProducts() {
   });
 }
 
-// async function getactiveProducts() {
-//   return new Promise((resolve, reject) => {
-//     connection.query("SELECT * FROM product", (error, results) => {
-//       if (error) {
-//         return reject({ message: "Error getting products:", error: error });
-//       }
-//       return resolve({ status: "OK", data: results });
-//     });
-//   });
-// }
+
+
+
 
 // GET Product by id
 async function getProductById(productId) {
@@ -162,5 +154,5 @@ module.exports = {
   updateProduct,
   updateProductStatus,
   autocompleteProducts,
-  getActiveProducts,
+  getactiveProducts,
 };

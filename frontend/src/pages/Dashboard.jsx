@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Make sure you're importing useNavigate
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header.jsx";
+import config from "../config/config.js";
 import { FaUsers, FaUserShield, FaShoppingCart, FaBox, FaTags } from "react-icons/fa";
 
 const Dashboard = () => {
   const [sessionValue, setSessionValue] = useState("");
   const [stats, setStats] = useState({
     totalUsers: 0,
-    totalAdmins: 0,
+    totalAdmins: 0, // This value is not provided in your response, but keeping it for consistency
     totalOrders: 0,
     totalProducts: 0,
     totalPromotions: 0,
   });
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userSession = sessionStorage.getItem("Sifat"); 
@@ -27,20 +28,27 @@ const Dashboard = () => {
 
     const fetchStats = async () => {
       try {
-        // const response = await fetch("https://your-api-endpoint.com/api/stats", {
-        //   method: "GET",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     Authorization: `Bearer ${sessionData.token}`, // Include the token if needed
-        //   },
-        // });
+        const response = await fetch(`${config.apiUrl}/dashbordInfo`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`API Error: ${response.status}`);
         }
 
         const data = await response.json();
-        setStats(data); // Update stats state with fetched data
+
+        // Assuming the response structure is as you described
+        setStats({
+          totalUsers: data.data.totalUsers || 0,
+          totalAdmins: data.data.totalAdmin || 0,// Placeholder, since the response doesn't contain this
+          totalProducts: data.data.totalProducts || 0,
+          totalPromotions: data.data.totalPromotions || 0,
+          totalOrders: data.data.totalOrders || 0,
+        });
       } catch (error) {
         console.error("Failed to fetch stats:", error);
       }
@@ -53,7 +61,7 @@ const Dashboard = () => {
     <>
       <Header />
       <div className="container mt-5">
-        <h1 className="mb-4 text-center">Admin Dashboard</h1>
+        <h1 className="mb-4 text-center display-4">Admin Dashboard</h1>
         <div className="row g-4">
           {/* Total User Accounts */}
           <div className="col-md-4 col-lg-3">

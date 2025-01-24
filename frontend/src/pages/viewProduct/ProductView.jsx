@@ -14,7 +14,7 @@ const ProductVideoPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/products/");
+        const response = await fetch("http://localhost:5000/products/active");
         const data = await response.json();
         if (data.status === "OK") {
           setProducts(data.data); // Set products from API response

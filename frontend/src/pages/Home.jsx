@@ -5,10 +5,11 @@ const Home = () => {
   return (
     <>
       <Header />
-      <h1 style={{ color: '#000' }}>Home</h1>
-      <p style={{ fontSize: '16px', color: '#333' }}>
-        Welcome to the About page! Here you can learn more about our mission, vision, and values.
-      </p>
+      <div className="container mt-5">
+       <h1 className="display-4">Welcome to Landing Page</h1>
+        <p>Home assignment for the Full-Stack Engineer -Lvl 2  role at Manush Technologies Ltd...</p>
+      </div>
+    
     </>
   );
 };
