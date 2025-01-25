@@ -1,4 +1,4 @@
-# Project Name
+# Order Management System
 
 ## Overview
 This project can be run in two ways: using Docker or setting up manually. Follow the instructions below to get started.
@@ -9,8 +9,8 @@ This project can be run in two ways: using Docker or setting up manually. Follow
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-repo-name.git
-   cd your-repo-name
+   git clone https://github.com/KaziSifatAlMaksud/OrderManagementSystem.git
+   cd OrderManagementSystem
    ```
 
 2. **Start the containers:**
@@ -50,7 +50,7 @@ If you prefer not to use Docker, follow these steps to run the project manually:
 2. **Backend:**
    - Navigate to the backend directory:
      ```bash
-     cd backend
+     cd Backend
      ```
    - Install dependencies and start the server:
      ```bash
@@ -62,7 +62,9 @@ If you prefer not to use Docker, follow these steps to run the project manually:
 3. **Database:**
    - Set up a local database using your preferred method.
    - Ensure the database credentials in the backend configuration match your local setup.
-
+     ```bash
+     Database Name:  test
+     ```
 ---
 
 ## Project Structure
