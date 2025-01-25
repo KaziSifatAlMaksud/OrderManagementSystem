@@ -90,7 +90,3 @@ If you prefer not to use Docker, follow these steps to run the project manually:
 ## Contributing
 Contributions are welcome! Please fork this repository and create a pull request for any changes.
 
----
-
-## License
-This project is licensed under the [MIT License](LICENSE).
